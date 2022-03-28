@@ -134,6 +134,7 @@ public class UpdateAccount extends JFrame {
         }
 
         // update button listener
+        // display details for update
         // create instance of CreateOrder class
         updateJButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -143,7 +144,7 @@ public class UpdateAccount extends JFrame {
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("UPDATE customer (name,email,password,address,telephone) VALUES(?,?,?,?,?) WHERE idCust=?");
+                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, address=?, telephone=? WHERE idCust=?");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     password = passwordTextField.getText();
@@ -157,7 +158,7 @@ public class UpdateAccount extends JFrame {
                     pstat.setInt(6, Login.customerID);
                     // insert data into table
                     i = pstat.executeUpdate();
-                    System.out.println(i+"record succesfully updated");
+                    System.out.println(i+" record succesfully updated in the database table");
             } catch (SQLException sqlException){
                 sqlException.printStackTrace();
             } finally {
@@ -205,9 +206,8 @@ public class UpdateAccount extends JFrame {
                 dispose();
             }
         });
-
-
     }// end constructor
+
     // main
     public static void main(String args[]){
         UpdateAccount updateAccount = new UpdateAccount("Update Account Details");
