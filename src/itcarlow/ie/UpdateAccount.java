@@ -12,21 +12,27 @@ public class UpdateAccount extends JFrame {
     private JPanel nameJPanel;
     private JPanel addressJPanel;
     private JPanel emailJPanel;
+    private JPanel confirmEmailJPanel;
     private JPanel telephoneJPanel;
     private JPanel passwordJPanel;
+    private JPanel confirmPasswordJPanel;
     private JPanel updateCancelJPanel;
     // labels
     private JLabel nameJLabel;
     private JLabel addressJLabel;
     private JLabel emailJLabel;
+    private JLabel confirmEmailJLabel;
     private JLabel telephoneJLabel;
     private JLabel passwordJLabel;
+    private JLabel confirmPasswordJLabel;
     // text fields
     private JTextField nameTextField;
     private JTextField addressTextField;
     private JTextField emailTextField;
+    private JTextField confirmEmailTextField;
     private JTextField telephoneTextField;
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
+    private JPasswordField confirmPasswordTextField;
     // buttons
     private JButton updateJButton;
     private JButton cancelJButton;
@@ -40,7 +46,9 @@ public class UpdateAccount extends JFrame {
     String name;
     String address;
     String email;
+    String confirmEmail;
     String password;
+    String confirmPassword;
     String telephone;
     int i = 0;
 
@@ -54,7 +62,7 @@ public class UpdateAccount extends JFrame {
         nameJPanel = new JPanel(new FlowLayout());
         nameJLabel = new JLabel("Name");
         nameTextField = new JTextField();
-        nameTextField.setPreferredSize(new Dimension(350,40));
+        nameTextField.setPreferredSize(new Dimension(350,30));
         nameJPanel.add(nameJLabel);
         nameJPanel.add(nameTextField);
 
@@ -62,7 +70,7 @@ public class UpdateAccount extends JFrame {
         addressJPanel = new JPanel(new FlowLayout());
         addressJLabel = new JLabel("Address");
         addressTextField = new JTextField();
-        addressTextField.setPreferredSize(new Dimension(350,40));
+        addressTextField.setPreferredSize(new Dimension(350,30));
         addressJPanel.add(addressJLabel);
         addressJPanel.add(addressTextField);
 
@@ -70,25 +78,41 @@ public class UpdateAccount extends JFrame {
         emailJPanel = new JPanel(new FlowLayout());
         emailJLabel = new JLabel("Email");
         emailTextField = new JTextField();
-        emailTextField.setPreferredSize(new Dimension(350,40));
+        emailTextField.setPreferredSize(new Dimension(350,30));
         emailJPanel.add(emailJLabel);
         emailJPanel.add(emailTextField);
+
+        // confirm email panel
+        confirmEmailJPanel = new JPanel(new FlowLayout());
+        confirmEmailJLabel = new JLabel("Confirm Email");
+        confirmEmailTextField = new JPasswordField();
+        confirmEmailTextField.setPreferredSize(new Dimension(350,30));
+        confirmEmailJPanel.add(confirmEmailJLabel);
+        confirmEmailJPanel.add(confirmEmailTextField);
 
         // telephone panel
         telephoneJPanel = new JPanel(new FlowLayout());
         telephoneJLabel = new JLabel("Telephone");
         telephoneTextField = new JTextField();
-        telephoneTextField.setPreferredSize(new Dimension(350,40));
+        telephoneTextField.setPreferredSize(new Dimension(350,30));
         telephoneJPanel.add(telephoneJLabel);
         telephoneJPanel.add(telephoneTextField);
 
         // password panel
         passwordJPanel = new JPanel(new FlowLayout());
         passwordJLabel = new JLabel("Password");
-        passwordTextField = new JTextField();
-        passwordTextField.setPreferredSize(new Dimension(350,40));
+        passwordTextField = new JPasswordField();
+        passwordTextField.setPreferredSize(new Dimension(350,30));
         passwordJPanel.add(passwordJLabel);
         passwordJPanel.add(passwordTextField);
+
+        // confirm password
+        confirmPasswordJPanel = new JPanel(new FlowLayout());
+        confirmPasswordJLabel = new JLabel("Confirm Password");
+        confirmPasswordTextField = new JPasswordField();
+        confirmPasswordTextField.setPreferredSize(new Dimension(350,30));
+        confirmPasswordJPanel.add(confirmPasswordJLabel);
+        confirmPasswordJPanel.add(confirmPasswordTextField);
 
         // button panel
         updateCancelJPanel = new JPanel(new FlowLayout());
@@ -102,7 +126,9 @@ public class UpdateAccount extends JFrame {
         // add panels to jframe
         add(nameJPanel);
         add(emailJPanel);
+        add(confirmEmailJPanel);
         add(passwordJPanel);
+        add(confirmPasswordJPanel);
         add(addressJPanel);
         add(telephoneJPanel);
         add(updateCancelJPanel);
@@ -147,18 +173,27 @@ public class UpdateAccount extends JFrame {
                     pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, address=?, telephone=? WHERE idCust=?");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
-                    password = passwordTextField.getText();
+                    confirmEmail = confirmEmailTextField.getText();
+                    password = new String(passwordTextField.getPassword());
+                    confirmPassword = new String(confirmPasswordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
-                    pstat.setString(1, name);
-                    pstat.setString(2, email);
-                    pstat.setString(3, password);
-                    pstat.setString(4, address);
-                    pstat.setString(5, telephone);
-                    pstat.setInt(6, Login.customerID);
-                    // insert data into table
-                    i = pstat.executeUpdate();
-                    System.out.println(i+" record succesfully updated in the database table");
+                    if(!email.equals(confirmEmail)){
+                        JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else if(!password.equals(confirmPassword)){
+                        JOptionPane.showMessageDialog(null,"Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else{
+                        pstat.setString(1, name);
+                        pstat.setString(2, email);
+                        pstat.setString(3, password);
+                        pstat.setString(4, address);
+                        pstat.setString(5, telephone);
+                        pstat.setInt(6, Login.customerID);
+                        // insert data into table
+                        i = pstat.executeUpdate();
+                        System.out.println(i+" record succesfully updated in the database table");
+                    }
             } catch (SQLException sqlException){
                 sqlException.printStackTrace();
             } finally {
@@ -177,6 +212,7 @@ public class UpdateAccount extends JFrame {
                 dispose();
             }
         });// end listener
+
         // cancel button listener
         // create instance of CreateOrder class
         cancelJButton.addMouseListener(new MouseAdapter() {
