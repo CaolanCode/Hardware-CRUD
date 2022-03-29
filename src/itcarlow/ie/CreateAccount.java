@@ -120,12 +120,12 @@ public class CreateAccount extends JFrame{
 
         // add panels to JFrame top to bottom
         add(nameJPanel);
-        add(addressJPanel);
-        add(telephoneJPanel);
         add(emailJPanel);
         add(confirmEmailJPanel);
         add(passwordJPanel);
         add(confirmPasswordJPanel);
+        add(addressJPanel);
+        add(telephoneJPanel);
         add(buttonJPanel);
 
 
