@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.sql.*;
 
 public class CreateOrder extends JFrame{
@@ -34,9 +35,16 @@ public class CreateOrder extends JFrame{
     final String DATABASE_URL = "jdbc:mysql://localhost/C.I.M.S";
     Connection connection = null;
     PreparedStatement pstat = null;
+    PreparedStatement pstatInvoice = null;
+    PreparedStatement pstatProduct = null;
     ResultSet resultSet;
     int i = 0;
+    String name;
+    int quantity;
+    int productFk;
+    BigDecimal cost;
 
+    // constructor
     public CreateOrder(String title){
         super(title);
         // set layout
@@ -86,9 +94,9 @@ public class CreateOrder extends JFrame{
         add(listShowJPanel);
         add(updateLogoutJPanel);
 
-
+        // fill combobox with product names
         try{
-            // establist connection with database
+            // establish connection with database
             connection = DriverManager.getConnection(DATABASE_URL, "root","root");
             // create prepared statement for retrieve all product names
             pstat = connection.prepareStatement("SELECT name FROM product");
@@ -106,6 +114,58 @@ public class CreateOrder extends JFrame{
                 exception.printStackTrace();
             }
         }
+
+        // submit order button listener
+        // create order in order table
+        // create instance of create order class
+        submitJButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try{
+                    // selected combobox item
+                    name = (String)productCombobox.getSelectedItem();
+                    // quantity int entered
+                    quantity = Integer.parseInt(quantityTextField.getText());
+                    // establish connection with database
+                    connection = DriverManager.getConnection(DATABASE_URL, "root","root");
+                    // create prepared statement to retrieve product details of order information
+                    pstatProduct = connection.prepareStatement("SELECT idProd, price FROM product WHERE name=?");
+                    pstatProduct.setString(1,name);
+                    resultSet =  pstatProduct.executeQuery();
+                    if(resultSet.next()){
+                        productFk = resultSet.getInt("idProd");
+                        cost = resultSet.getBigDecimal("price");
+                    }
+                    // calculate cost of order
+                    cost = cost.multiply(BigDecimal.valueOf(quantity));
+                    // create prepared statement for create order
+                    pstatInvoice = connection.prepareStatement("INSERT INTO invoice (quantity,cost,customerFk,productFk) VALUES(?,?,?,?)");
+                    pstatInvoice.setInt(1,quantity);
+                    pstatInvoice.setBigDecimal(2, cost);
+                    pstatInvoice.setInt(3,Login.customerID);
+                    pstatInvoice.setInt(4, productFk);
+                    // insert data into table
+                    i = pstatInvoice.executeUpdate();
+                    System.out.println(i + " successful orders");
+                }catch (SQLException sqlException){
+                    sqlException.printStackTrace();
+                } finally {
+                    try {
+                        connection.close();
+                        pstat.close();
+                    }catch (Exception exception){
+                        exception.printStackTrace();
+                    }
+                }
+                CreateOrder createOrder = new CreateOrder("Order a Product");
+                createOrder.setVisible(true);
+                createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                createOrder.setSize(550,400);
+                createOrder.setLocation(500,400);
+                dispose();
+            }
+        });
 
         // clear screen button listener
         // create instance of CreateOrder class

@@ -127,7 +127,7 @@ public class CreateAccount extends JFrame{
                     pstat.setString(5, telephone);
                     // insert data into table
                     i = pstat.executeUpdate();
-                    System.out.println(i+"record succesfully added to the table");
+                    System.out.println(i + " record succesfully added to the table");
 
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();
