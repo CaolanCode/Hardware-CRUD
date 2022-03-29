@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.sql.*;
 
 public class ListProducts extends JFrame {
@@ -26,7 +27,7 @@ public class ListProducts extends JFrame {
     ResultSet resultSet;
     int productId;
     String name;
-    double price;
+    BigDecimal price;
     int quantity;
     int i = 0;
 
@@ -66,7 +67,7 @@ public class ListProducts extends JFrame {
             while(resultSet.next()){
                 productId = resultSet.getInt("idProd");
                 name = resultSet.getString("name");
-                price = resultSet.getDouble("price");
+                price = resultSet.getBigDecimal("price");
                 quantity = resultSet.getInt("quantity");
                 tableModel.addRow(new Object[]{productId,name,price,quantity});
                 i++;
