@@ -25,7 +25,7 @@ public class CreateAccount extends JFrame{
     private JButton submitJButton;
     private JButton cancelJButton;
     private JPanel buttonJPanel;
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
     private JPanel passwordJPanel;
     private JLabel passwordJLabel;
 
@@ -82,7 +82,7 @@ public class CreateAccount extends JFrame{
         // password panel and add components
         passwordJPanel = new JPanel(new FlowLayout());
         passwordJLabel = new JLabel("Password:");
-        passwordTextField = new JTextField();
+        passwordTextField = new JPasswordField();
         passwordTextField.setPreferredSize(new Dimension(350,40));
         passwordJPanel.add(passwordJLabel);
         passwordJPanel.add(passwordTextField);
@@ -117,7 +117,7 @@ public class CreateAccount extends JFrame{
                     pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
-                    password = passwordTextField.getText();
+                    password = new String(passwordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
                     pstat.setString(1, name);

@@ -21,7 +21,7 @@ public class Login extends JFrame {
     private JLabel signUpJLabel;
     // text field
     private JTextField emailTextField;
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
     // buttons
     private JButton loginJButton;
     private JButton cancelJButton;
@@ -52,7 +52,7 @@ public class Login extends JFrame {
         // password panel
         passwordJPanel = new JPanel(new FlowLayout());
         passwordJLabel = new JLabel("Password");
-        passwordTextField = new JTextField();
+        passwordTextField = new JPasswordField();
         passwordTextField.setPreferredSize(new Dimension(350,40));
         passwordJPanel.add(passwordJLabel);
         passwordJPanel.add(passwordTextField);
