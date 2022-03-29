@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.sql.*;
 
 public class ShowBasket extends JFrame {
@@ -25,7 +26,7 @@ public class ShowBasket extends JFrame {
     PreparedStatement pstat = null;
     ResultSet resultSet;
     int invoiceId;
-    double price;
+    BigDecimal cost;
     int quantity;
     int productId;
     int i = 0;
@@ -67,9 +68,9 @@ public class ShowBasket extends JFrame {
             while(resultSet.next()){
                 invoiceId = resultSet.getInt("idInvoice");
                 quantity = resultSet.getInt("quantity");
-                price = resultSet.getDouble("cost");
+                cost = resultSet.getBigDecimal("cost");
                 productId = resultSet.getInt("productFk");
-                tableModel.addRow(new Object[]{invoiceId,quantity, price, productId});
+                tableModel.addRow(new Object[]{invoiceId,quantity, cost, productId});
                 i++;
             }
             // error handling
