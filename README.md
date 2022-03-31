@@ -11,4 +11,5 @@ A CRUD GUI to allow customers to:
 * Delete their account
 
 GUI was built using Java.Swing
+
 Database was managed using SQL
