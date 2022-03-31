@@ -127,47 +127,55 @@ public class CreateOrder extends JFrame{
                 try{
                     // selected combobox item
                     name = (String)productCombobox.getSelectedItem();
-                    // quantity int entered
-                    quantity = Integer.parseInt(quantityTextField.getText());
-                    // establish connection with database
-                    connection = DriverManager.getConnection(DATABASE_URL, "root","root");
-                    // create prepared statement to retrieve product details of order information
-                    pstatProduct = connection.prepareStatement("SELECT idProd, price, quantity FROM product WHERE name=?");
-                    pstatProduct.setString(1,name);
-                    resultSet =  pstatProduct.executeQuery();
-                    if(resultSet.next()){
-                        productFk = resultSet.getInt("idProd");
-                        cost = resultSet.getBigDecimal("price");
-                        stock = resultSet.getInt("quantity");
-                    }
-                    // compare stock size to order size
-                    if(quantity > stock){
-                        JOptionPane.showMessageDialog(null,"Not enough stock in the store for this order", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        // calculate cost of order
-                        cost = cost.multiply(BigDecimal.valueOf(quantity));
-                        // create prepared statement for create order
-                        pstatInvoice = connection.prepareStatement("INSERT INTO invoice (quantity,cost,customerFk,productFk) VALUES(?,?,?,?)");
-                        pstatInvoice.setInt(1,quantity);
-                        pstatInvoice.setBigDecimal(2, cost);
-                        pstatInvoice.setInt(3,Login.customerID);
-                        pstatInvoice.setInt(4, productFk);
-                        // insert data into table
-                        i = pstatInvoice.executeUpdate();
-                        System.out.println(i + " successful orders");
+                    // error handling for no quantity entered
+                    if(quantityTextField.getText().length() == 0) {
+                        JOptionPane.showMessageDialog(null,"Empty quantity field", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else{
+                        // quantity int entered
+                        quantity = Integer.parseInt(quantityTextField.getText());
+                        // establish connection with database
+                        connection = DriverManager.getConnection(DATABASE_URL, "root","root");
+                        // create prepared statement to retrieve product details of order information
+                        pstatProduct = connection.prepareStatement("SELECT idProd, price, quantity FROM product WHERE name=?");
+                        pstatProduct.setString(1,name);
+                        resultSet =  pstatProduct.executeQuery();
+                        if(resultSet.next()){
+                            productFk = resultSet.getInt("idProd");
+                            cost = resultSet.getBigDecimal("price");
+                            stock = resultSet.getInt("quantity");
+                        }
+                        // compare stock size to order size
+                        if(quantity > stock){
+                            JOptionPane.showMessageDialog(null,"Not enough stock in the store for this order", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else{
+                            // calculate cost of order
+                            cost = cost.multiply(BigDecimal.valueOf(quantity));
+                            // create prepared statement for create order
+                            pstatInvoice = connection.prepareStatement("INSERT INTO invoice (quantity,cost,customerFk,productFk) VALUES(?,?,?,?)");
+                            pstatInvoice.setInt(1,quantity);
+                            pstatInvoice.setBigDecimal(2, cost);
+                            pstatInvoice.setInt(3,Login.customerID);
+                            pstatInvoice.setInt(4, productFk);
+                            // insert data into table
+                            i = pstatInvoice.executeUpdate();
+                            System.out.println(i + " successful orders");
 
-                        // reduce the quantity of product in the products table
-                        // subtract quantity purchased from current stock
-                        stock = stock - quantity;
-                        pstatStock = connection.prepareStatement("UPDATE product SET quantity=? WHERE name=?");
-                        pstatStock.setInt(1,stock);
-                        pstatStock.setString(2,name);
-                        // update data in the table
-                        i = pstatStock.executeUpdate();
-                        System.out.println(i + " record successfully updated in the product table");
+                            // reduce the quantity of product in the products table
+                            // subtract quantity purchased from current stock
+                            stock = stock - quantity;
+                            pstatStock = connection.prepareStatement("UPDATE product SET quantity=? WHERE name=?");
+                            pstatStock.setInt(1,stock);
+                            pstatStock.setString(2,name);
+                            // update data in the table
+                            i = pstatStock.executeUpdate();
+                            System.out.println(i + " record successfully updated in the product table");
+                        }
                     }
-
-                }catch (SQLException sqlException){
+                    // catch for parseInt error
+                } catch(NumberFormatException exception){
+                    System.out.println(quantityTextField.getText() + " is not a valid quantity");
+                    JOptionPane.showMessageDialog(null,"Not a valid quantity", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch(SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {
                     try {
