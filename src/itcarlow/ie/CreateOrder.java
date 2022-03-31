@@ -140,27 +140,33 @@ public class CreateOrder extends JFrame{
                         cost = resultSet.getBigDecimal("price");
                         stock = resultSet.getInt("quantity");
                     }
-                    // calculate cost of order
-                    cost = cost.multiply(BigDecimal.valueOf(quantity));
-                    // create prepared statement for create order
-                    pstatInvoice = connection.prepareStatement("INSERT INTO invoice (quantity,cost,customerFk,productFk) VALUES(?,?,?,?)");
-                    pstatInvoice.setInt(1,quantity);
-                    pstatInvoice.setBigDecimal(2, cost);
-                    pstatInvoice.setInt(3,Login.customerID);
-                    pstatInvoice.setInt(4, productFk);
-                    // insert data into table
-                    i = pstatInvoice.executeUpdate();
-                    System.out.println(i + " successful orders");
+                    // compare stock size to order size
+                    if(quantity > stock){
+                        JOptionPane.showMessageDialog(null,"Not enough stock in the store for this order", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        // calculate cost of order
+                        cost = cost.multiply(BigDecimal.valueOf(quantity));
+                        // create prepared statement for create order
+                        pstatInvoice = connection.prepareStatement("INSERT INTO invoice (quantity,cost,customerFk,productFk) VALUES(?,?,?,?)");
+                        pstatInvoice.setInt(1,quantity);
+                        pstatInvoice.setBigDecimal(2, cost);
+                        pstatInvoice.setInt(3,Login.customerID);
+                        pstatInvoice.setInt(4, productFk);
+                        // insert data into table
+                        i = pstatInvoice.executeUpdate();
+                        System.out.println(i + " successful orders");
 
-                    // reduce the quantity of product in the products table
-                    // subtract quantity purchased from current stock
-                    stock = stock - quantity;
-                    pstatStock = connection.prepareStatement("UPDATE product SET quantity=? WHERE name=?");
-                    pstatStock.setInt(1,stock);
-                    pstatStock.setString(2,name);
-                    // update data in the table
-                    i = pstatStock.executeUpdate();
-                    System.out.println(i + " record successfully updated in the product table");
+                        // reduce the quantity of product in the products table
+                        // subtract quantity purchased from current stock
+                        stock = stock - quantity;
+                        pstatStock = connection.prepareStatement("UPDATE product SET quantity=? WHERE name=?");
+                        pstatStock.setInt(1,stock);
+                        pstatStock.setString(2,name);
+                        // update data in the table
+                        i = pstatStock.executeUpdate();
+                        System.out.println(i + " record successfully updated in the product table");
+                    }
+
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {
