@@ -104,6 +104,16 @@ public class Login extends JFrame {
                         System.out.println(customerID);
                         dispose();
                     } else{
+                        // error message for empty email textfield
+                        if(emailTextField.getText().length() == 0){
+                            JOptionPane.showMessageDialog(null,"Please enter an email", "Error", JOptionPane.ERROR_MESSAGE);
+                            // error message for empty password textfield
+                        } else if(passwordTextField.getPassword().length == 0){
+                            JOptionPane.showMessageDialog(null,"Please enter a password", "Error", JOptionPane.ERROR_MESSAGE);
+                            // error message for incorrect email or password
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                         Login login = new Login("Login");
                         login.setVisible(true);
                         login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
