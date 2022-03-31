@@ -158,11 +158,14 @@ public class CreateAccount extends JFrame{
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
                     } else if(!password.equals(confirmPassword)){
                         JOptionPane.showMessageDialog(null,"Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        // call validEmail method to check if email if valid
+                    } else if(!validEmail(email)) {
+                        JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                        // insert data into table
-                        i = pstat.executeUpdate();
-                        System.out.println(i + " record successfully added to the customer table");
-                    }
+                            // insert data into table
+                            i = pstat.executeUpdate();
+                            System.out.println(i + " record successfully added to the customer table");
+                        }
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {
@@ -197,6 +200,12 @@ public class CreateAccount extends JFrame{
         });
     }// end constructor
 
+    // validate inputted email
+    // using java.util.regex.patterns.match()
+    public static boolean validEmail(String email){
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
+    }
     // main
     public static void main(String args[]){
         CreateAccount createAccount = new CreateAccount("Create Account");
