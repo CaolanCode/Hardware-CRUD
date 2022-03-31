@@ -37,12 +37,14 @@ public class CreateOrder extends JFrame{
     PreparedStatement pstat = null;
     PreparedStatement pstatInvoice = null;
     PreparedStatement pstatProduct = null;
+    PreparedStatement pstatStock = null;
     ResultSet resultSet;
     int i = 0;
     String name;
     int quantity;
     int productFk;
     BigDecimal cost;
+    int stock;
 
     // constructor
     public CreateOrder(String title){
@@ -130,12 +132,13 @@ public class CreateOrder extends JFrame{
                     // establish connection with database
                     connection = DriverManager.getConnection(DATABASE_URL, "root","root");
                     // create prepared statement to retrieve product details of order information
-                    pstatProduct = connection.prepareStatement("SELECT idProd, price FROM product WHERE name=?");
+                    pstatProduct = connection.prepareStatement("SELECT idProd, price, quantity FROM product WHERE name=?");
                     pstatProduct.setString(1,name);
                     resultSet =  pstatProduct.executeQuery();
                     if(resultSet.next()){
                         productFk = resultSet.getInt("idProd");
                         cost = resultSet.getBigDecimal("price");
+                        stock = resultSet.getInt("quantity");
                     }
                     // calculate cost of order
                     cost = cost.multiply(BigDecimal.valueOf(quantity));
@@ -148,6 +151,16 @@ public class CreateOrder extends JFrame{
                     // insert data into table
                     i = pstatInvoice.executeUpdate();
                     System.out.println(i + " successful orders");
+
+                    // reduce the quantity of product in the products table
+                    // subtract quantity purchased from current stock
+                    stock = stock - quantity;
+                    pstatStock = connection.prepareStatement("UPDATE product SET quantity=? WHERE name=?");
+                    pstatStock.setInt(1,stock);
+                    pstatStock.setString(2,name);
+                    // update data in the table
+                    i = pstatStock.executeUpdate();
+                    System.out.println(i + " record successfully updated in the product table");
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {
