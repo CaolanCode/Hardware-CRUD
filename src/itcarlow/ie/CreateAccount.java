@@ -161,7 +161,7 @@ public class CreateAccount extends JFrame{
                     } else{
                         // insert data into table
                         i = pstat.executeUpdate();
-                        System.out.println(i + " record successfully added to the table");
+                        System.out.println(i + " record successfully added to the customer table");
                     }
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();

@@ -75,11 +75,11 @@ public class ShowBasket extends JFrame {
             }
             // error handling
             if(i<1){
-                JOptionPane.showMessageDialog(null,"No record Found", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,"No record Found in the invoice table", "Error", JOptionPane.ERROR_MESSAGE);
             } else if(i==1){
-                System.out.println(i + " record found");
+                System.out.println(i + " record found in the invoice table");
             } else{
-                System.out.println(i + " records found");
+                System.out.println(i + " records found in the invoice table");
             }
         }catch (SQLException sqlException){
             sqlException.printStackTrace();

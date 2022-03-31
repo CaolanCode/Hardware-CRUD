@@ -74,11 +74,11 @@ public class ListProducts extends JFrame {
             }
             // error handling
             if(i<1){
-                JOptionPane.showMessageDialog(null,"No record Found", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,"No record Found in the product table", "Error", JOptionPane.ERROR_MESSAGE);
             } else if(i==1){
-                System.out.println(i + " record found");
+                System.out.println(i + " record found in the product table");
             } else{
-                System.out.println(i + " records found");
+                System.out.println(i + " records found in the product table");
             }
         }catch (SQLException sqlException){
             sqlException.printStackTrace();

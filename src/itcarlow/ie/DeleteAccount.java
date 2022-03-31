@@ -83,7 +83,7 @@ public class DeleteAccount extends JFrame {
                     pstat.setInt(1,customerID);
                     // delete data from the table
                     i = pstat.executeUpdate();
-                    System.out.println(i + " record successfully removed from the table");
+                    System.out.println(i + " record successfully removed from the customer table");
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {

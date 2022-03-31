@@ -192,7 +192,7 @@ public class UpdateAccount extends JFrame {
                         pstat.setInt(6, Login.customerID);
                         // insert data into table
                         i = pstat.executeUpdate();
-                        System.out.println(i+" record succesfully updated in the database table");
+                        System.out.println(i+" record successfully updated in the customer table");
                     }
             } catch (SQLException sqlException){
                 sqlException.printStackTrace();
