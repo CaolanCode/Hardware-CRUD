@@ -13,11 +13,11 @@ public class ListProducts extends JFrame {
     // panels
     private JPanel tableJPanel;
     private JPanel buttonJPanel;
-    // text pane
+    // table model
     DefaultTableModel tableModel = new DefaultTableModel();
     private JTable productJTable;
     String[] columnNames = {"Product ID", "Name", "Price", "Quantity"};
-    // button
+    // return button
     private JButton returnJButton;
 
     // database variables

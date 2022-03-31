@@ -84,12 +84,12 @@ public class Login extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                // -- code to check if creditionals are correct
+                // check if inputs are correct
                 try{
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     email = emailTextField.getText();
-                    password = passwordTextField.getText();
+                    password = new String(passwordTextField.getPassword());
                     pstat = connection.prepareStatement("SELECT idCust, email, password FROM customer WHERE email=? AND password=?");
                     pstat.setString(1,email);
                     pstat.setString(2,password);
@@ -140,7 +140,7 @@ public class Login extends JFrame {
         });
 
         // sign up button listener
-        // create instance of CreateAcount class
+        // create instance of CreateAccount class
         signUpButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
