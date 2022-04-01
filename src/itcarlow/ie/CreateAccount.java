@@ -1,13 +1,21 @@
 package itcarlow.ie;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateAccount extends JFrame{
     private JPanel nameJPanel;
@@ -47,6 +55,7 @@ public class CreateAccount extends JFrame{
     String address = "";
     String telephone = "";
     int i = 0;
+    byte[] hashedPassword = null;
 
     // constructor
     public CreateAccount(String title){
@@ -148,11 +157,7 @@ public class CreateAccount extends JFrame{
                     confirmPassword = new String(confirmPasswordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
-                    pstat.setString(1, name);
-                    pstat.setString(2, email);
-                    pstat.setString(3, password);
-                    pstat.setString(4, address);
-                    pstat.setString(5, telephone);
+
                     // compare email to confirm email
                     if(!email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
@@ -163,11 +168,20 @@ public class CreateAccount extends JFrame{
                     } else if(!validEmail(email)) {
                         JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
                     } else if(!validPassword(password)) {
-                        JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and at least 8 characters", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                            // insert data into table
-                            i = pstat.executeUpdate();
-                            System.out.println(i + " record successfully added to the customer table");
+                        // pass password to hashPassword method
+                        hashedPassword = hashPassword(password);
+                        // concatenate hashedPassword to password string
+                        password = "" + hashedPassword;
+                        pstat.setString(1, name);
+                        pstat.setString(2, email);
+                        pstat.setString(3, password);
+                        pstat.setString(4, address);
+                        pstat.setString(5, telephone);
+                        // insert data into table
+                        i = pstat.executeUpdate();
+                        System.out.println(i + " record successfully added to the customer table");
                         }
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();
@@ -212,10 +226,34 @@ public class CreateAccount extends JFrame{
 
     // validate inputted password
     // using java.util.regex.patterns.match()
-    // 1 letter, 1 a-z, 1 A-Z, 1 special char, no white space, 8-20 total characters
+    // 1 number, 1 a-z, 1 A-Z, 1 special char, no white space, at least 8 characters
     public static boolean validPassword(String password){
-        String regex ="^(?=.*[0-9]])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,20}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        // return true if it matches the regex pattern
         return password.matches(regex);
+    }
+
+    // hashing password method
+    // PBKDF2 algorithm
+    public static byte[] hashPassword(String password){
+        // create salt for hashing password
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        try{
+            // create PDEKeySpec and SecretKeyFactory
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536,128);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            try{
+                // generate hash
+                byte[] hash = factory.generateSecret(spec).getEncoded();
+                return hash;
+            } catch (InvalidKeySpecException ikse){
+                throw new RuntimeException(ikse);
+            }
+        } catch (NoSuchAlgorithmException nsae){
+            throw new RuntimeException(nsae);
+        }
     }
     // main
     public static void main(String args[]){
