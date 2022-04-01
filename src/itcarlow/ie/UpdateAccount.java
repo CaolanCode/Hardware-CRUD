@@ -196,9 +196,9 @@ public class UpdateAccount extends JFrame {
                     } else if(confirmPasswordTextField.getPassword().length != 0 && !password.equals(confirmPassword)) {
                         JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         // call validEmail method to check if email if valid
-                    } else if(!validEmail(email)) {
+                    } else if(!Validate.validEmail(email)) {
                     JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else if(!validPassword(password)) {
+                    } else if(!Validate.validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         if(confirmPasswordTextField.getPassword().length != 0){
@@ -269,22 +269,6 @@ public class UpdateAccount extends JFrame {
             }
         });
     }// end constructor
-
-    // validate inputted email
-    // using java.util.regex.patterns.match()
-    public static boolean validEmail(String email){
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-        return email.matches(regex);
-    }
-
-    // validate inputted password
-    // using java.util.regex.patterns.match()
-    // 1 number, 1 a-z, 1 A-Z, 1 special char, no white space, at least 8 characters
-    public static boolean validPassword(String password){
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-        // return true if it matches the regex pattern
-        return password.matches(regex);
-    }
 
     // main
     public static void main(String args[]){
