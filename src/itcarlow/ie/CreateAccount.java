@@ -32,7 +32,7 @@ public class CreateAccount extends JFrame{
     private JTextField confirmEmailJTextField;
     private JLabel confirmEmailJLabel;
     private JPanel confirmPasswordJPanel;
-    private JPasswordField confirmPasswordPasswordTextField;
+    private JPasswordField confirmPasswordTextField;
     private JLabel confirmPasswordJLabel;
 
     // database variables
@@ -106,10 +106,10 @@ public class CreateAccount extends JFrame{
         // confirm password panel and components
         confirmPasswordJPanel = new JPanel(new FlowLayout());
         confirmPasswordJLabel = new JLabel("Confirm Password");
-        confirmPasswordPasswordTextField = new JPasswordField();
-        confirmPasswordPasswordTextField.setPreferredSize(new Dimension(350,30));
+        confirmPasswordTextField = new JPasswordField();
+        confirmPasswordTextField.setPreferredSize(new Dimension(350,30));
         confirmPasswordJPanel.add(confirmPasswordJLabel);
-        confirmPasswordJPanel.add(confirmPasswordPasswordTextField);
+        confirmPasswordJPanel.add(confirmPasswordTextField);
 
         // button panel and add buttons
         buttonJPanel = new JPanel(new FlowLayout());
@@ -145,7 +145,7 @@ public class CreateAccount extends JFrame{
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailJTextField.getText();
                     password = new String(passwordTextField.getPassword());
-                    confirmPassword = new String(confirmPasswordPasswordTextField.getPassword());
+                    confirmPassword = new String(confirmPasswordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
                     pstat.setString(1, name);
@@ -153,9 +153,10 @@ public class CreateAccount extends JFrame{
                     pstat.setString(3, password);
                     pstat.setString(4, address);
                     pstat.setString(5, telephone);
-                    // check if email and password match the confirmed entries
+                    // compare email to confirm email
                     if(!email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        // compare password with confirmPassword
                     } else if(!password.equals(confirmPassword)){
                         JOptionPane.showMessageDialog(null,"Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         // call validEmail method to check if email if valid

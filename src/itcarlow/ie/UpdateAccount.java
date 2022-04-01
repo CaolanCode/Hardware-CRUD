@@ -178,10 +178,11 @@ public class UpdateAccount extends JFrame {
                     confirmPassword = new String(confirmPasswordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
-                    if(!email.equals(confirmEmail)){
+                    // check if confirmEmail is not length 0 and compare email with confirmEmail
+                    if(confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                    else if(!password.equals(confirmPassword)){
+                        // check if confirmPassword length is not 0 and compare password with confirmPassword
+                    } else if(confirmPasswordTextField.getPassword().length != 0 && !password.equals(confirmPassword)){
                         JOptionPane.showMessageDialog(null,"Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         pstat.setString(1, name);
