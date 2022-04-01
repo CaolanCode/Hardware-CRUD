@@ -9,13 +9,16 @@ import java.security.spec.KeySpec;
 
 public class HashPassword {
 
+    // static salt variable
+    public static byte[] salt;
+    // hashing password method
+    // PBKDF2 algorithm
     public static byte[] hashPassword(String password){
         // create salt for hashing password
         SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
+        salt = new byte[16];
         // generate random salt
         random.nextBytes(salt);
-        CreateAccount.saltByte = salt;
         try{
             // create PDEKeySpec and SecretKeyFactory
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536,128);

@@ -56,8 +56,8 @@ public class CreateAccount extends JFrame{
 
     // password variables
     byte[] hashedPassword = null;
-    static byte[] saltByte = null;
-    String saltString;
+    byte[] saltByte = null;
+    String saltString = "";
 
     // constructor
     public CreateAccount(String title){
@@ -172,10 +172,11 @@ public class CreateAccount extends JFrame{
                     } else if(!validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and at least 8 characters", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                        // pass password to hashPassword method
+                        // pass password to HashPassword class
                         hashedPassword = HashPassword.hashPassword(password);
                         // concatenate hashedPassword to password string
                         password = "" + hashedPassword;
+                        saltByte = HashPassword.salt;
                         saltString = "" + saltByte;
                         pstat.setString(1, name);
                         pstat.setString(2, email);

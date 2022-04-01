@@ -58,6 +58,8 @@ public class UpdateAccount extends JFrame {
     String telephone;
     int i = 0;
     byte[] hashedPassword = null;
+    byte[] saltByte;
+    String saltString = "";
 
     // constructor
     public UpdateAccount(String title){
@@ -147,10 +149,12 @@ public class UpdateAccount extends JFrame {
             pstat = connection.prepareStatement("SELECT * FROM customer WHERE idCust=?");
             pstat.setInt(1,Login.customerID);
             resultSet = pstat.executeQuery();
-            while(resultSet.next()){
+            if(resultSet.next()){
                 nameTextField.setText(resultSet.getString("name"));
                 emailTextField.setText(resultSet.getString("email"));
                 passwordTextField.setText(resultSet.getString("password"));
+                // assign salt database variable to saltString
+                saltString = resultSet.getString("salt");
                 addressTextField.setText(resultSet.getString("address"));
                 telephoneTextField.setText(resultSet.getString("telephone"));
             }
@@ -177,7 +181,7 @@ public class UpdateAccount extends JFrame {
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, address=?, telephone=? WHERE idCust=?");
+                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, salt=?, address=?, telephone=? WHERE idCust=?");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailTextField.getText();
@@ -197,16 +201,21 @@ public class UpdateAccount extends JFrame {
                     } else if(!validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                        // pass password to hashPassword method
-                        hashedPassword = hashPassword(password);
-                        // concatenate hashedPassword to password string
-                        password = "" + hashedPassword;
+                        if(confirmPasswordTextField.getPassword().length != 0){
+                            // pass password to HashPassword class
+                            hashedPassword = HashPassword.hashPassword(password);
+                            // concatenate hashedPassword to password string
+                            password = "" + hashedPassword;
+                            saltByte = HashPassword.salt;
+                            saltString = "" + saltByte;
+                        }
                         pstat.setString(1, name);
                         pstat.setString(2, email);
                         pstat.setString(3, password);
-                        pstat.setString(4, address);
-                        pstat.setString(5, telephone);
-                        pstat.setInt(6, Login.customerID);
+                        pstat.setString(4,saltString);
+                        pstat.setString(5, address);
+                        pstat.setString(6, telephone);
+                        pstat.setInt(7, Login.customerID);
                         // insert data into table
                         i = pstat.executeUpdate();
                         System.out.println(i+" record successfully updated in the customer table");
@@ -275,29 +284,6 @@ public class UpdateAccount extends JFrame {
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         // return true if it matches the regex pattern
         return password.matches(regex);
-    }
-
-    // hashing password method
-    // PBKDF2 algorithm
-    public static byte[] hashPassword(String password){
-        // create salt for hashing password
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        try{
-            // create PDEKeySpec and SecretKeyFactory
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536,128);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            try{
-                // generate hash
-                byte[] hash = factory.generateSecret(spec).getEncoded();
-                return hash;
-            } catch (InvalidKeySpecException ikse){
-                throw new RuntimeException(ikse);
-            }
-        } catch (NoSuchAlgorithmException nsae){
-            throw new RuntimeException(nsae);
-        }
     }
 
     // main
