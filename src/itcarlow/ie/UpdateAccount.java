@@ -187,6 +187,8 @@ public class UpdateAccount extends JFrame {
                         // call validEmail method to check if email if valid
                     } else if(!validEmail(email)) {
                     JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else if(!validPassword(password)) {
+                        JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         pstat.setString(1, name);
                         pstat.setString(2, email);
@@ -253,6 +255,14 @@ public class UpdateAccount extends JFrame {
     public static boolean validEmail(String email){
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
+    }
+
+    // validate inputted password
+    // using java.util.regex.patterns.match()
+    // 1 letter, 1 a-z, 1 A-Z, 1 special char, no white space, 8-20 total characters
+    public static boolean validPassword(String password){
+        String regex ="^(?=.*[0-9]])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,20}$";
+        return password.matches(regex);
     }
 
     // main
