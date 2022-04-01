@@ -14,8 +14,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CreateAccount extends JFrame{
     private JPanel nameJPanel;
@@ -55,7 +53,11 @@ public class CreateAccount extends JFrame{
     String address = "";
     String telephone = "";
     int i = 0;
+
+    // password variables
     byte[] hashedPassword = null;
+    static byte[] saltByte = null;
+    String saltString;
 
     // constructor
     public CreateAccount(String title){
@@ -149,7 +151,7 @@ public class CreateAccount extends JFrame{
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
+                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,salt,address,telephone) VALUES(?,?,?,?,?,?)");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailJTextField.getText();
@@ -171,14 +173,16 @@ public class CreateAccount extends JFrame{
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and at least 8 characters", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         // pass password to hashPassword method
-                        hashedPassword = hashPassword(password);
+                        hashedPassword = HashPassword.hashPassword(password);
                         // concatenate hashedPassword to password string
                         password = "" + hashedPassword;
+                        saltString = "" + saltByte;
                         pstat.setString(1, name);
                         pstat.setString(2, email);
                         pstat.setString(3, password);
-                        pstat.setString(4, address);
-                        pstat.setString(5, telephone);
+                        pstat.setString(4, saltString);
+                        pstat.setString(5, address);
+                        pstat.setString(6, telephone);
                         // insert data into table
                         i = pstat.executeUpdate();
                         System.out.println(i + " record successfully added to the customer table");
@@ -233,28 +237,6 @@ public class CreateAccount extends JFrame{
         return password.matches(regex);
     }
 
-    // hashing password method
-    // PBKDF2 algorithm
-    public static byte[] hashPassword(String password){
-        // create salt for hashing password
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        try{
-            // create PDEKeySpec and SecretKeyFactory
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536,128);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            try{
-                // generate hash
-                byte[] hash = factory.generateSecret(spec).getEncoded();
-                return hash;
-            } catch (InvalidKeySpecException ikse){
-                throw new RuntimeException(ikse);
-            }
-        } catch (NoSuchAlgorithmException nsae){
-            throw new RuntimeException(nsae);
-        }
-    }
     // main
     public static void main(String args[]){
         CreateAccount createAccount = new CreateAccount("Create Account");

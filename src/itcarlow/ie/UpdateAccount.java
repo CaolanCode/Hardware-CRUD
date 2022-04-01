@@ -1,9 +1,15 @@
 package itcarlow.ie;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.sql.*;
 
 public class UpdateAccount extends JFrame {
@@ -51,6 +57,7 @@ public class UpdateAccount extends JFrame {
     String confirmPassword;
     String telephone;
     int i = 0;
+    byte[] hashedPassword = null;
 
     // constructor
     public UpdateAccount(String title){
@@ -190,6 +197,10 @@ public class UpdateAccount extends JFrame {
                     } else if(!validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
+                        // pass password to hashPassword method
+                        hashedPassword = hashPassword(password);
+                        // concatenate hashedPassword to password string
+                        password = "" + hashedPassword;
                         pstat.setString(1, name);
                         pstat.setString(2, email);
                         pstat.setString(3, password);
@@ -264,6 +275,29 @@ public class UpdateAccount extends JFrame {
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         // return true if it matches the regex pattern
         return password.matches(regex);
+    }
+
+    // hashing password method
+    // PBKDF2 algorithm
+    public static byte[] hashPassword(String password){
+        // create salt for hashing password
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        try{
+            // create PDEKeySpec and SecretKeyFactory
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536,128);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            try{
+                // generate hash
+                byte[] hash = factory.generateSecret(spec).getEncoded();
+                return hash;
+            } catch (InvalidKeySpecException ikse){
+                throw new RuntimeException(ikse);
+            }
+        } catch (NoSuchAlgorithmException nsae){
+            throw new RuntimeException(nsae);
+        }
     }
 
     // main

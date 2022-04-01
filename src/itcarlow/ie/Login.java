@@ -34,6 +34,8 @@ public class Login extends JFrame {
     ResultSet resultSet;
     String email = "";
     String password = "";
+    byte[] hashedPassword = null;
+
 
     // constructor
     public Login(String title){
@@ -90,6 +92,9 @@ public class Login extends JFrame {
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     email = emailTextField.getText();
                     password = new String(passwordTextField.getPassword());
+                    hashedPassword = HashPassword.hashPassword(password);
+                    password = "" + hashedPassword;
+                    System.out.println(password);
                     pstat = connection.prepareStatement("SELECT idCust, email, password FROM customer WHERE email=? AND password=?");
                     pstat.setString(1,email);
                     pstat.setString(2,password);
