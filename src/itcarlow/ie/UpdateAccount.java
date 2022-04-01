@@ -182,8 +182,11 @@ public class UpdateAccount extends JFrame {
                     if(confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         // check if confirmPassword length is not 0 and compare password with confirmPassword
-                    } else if(confirmPasswordTextField.getPassword().length != 0 && !password.equals(confirmPassword)){
-                        JOptionPane.showMessageDialog(null,"Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else if(confirmPasswordTextField.getPassword().length != 0 && !password.equals(confirmPassword)) {
+                        JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        // call validEmail method to check if email if valid
+                    } else if(!validEmail(email)) {
+                    JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         pstat.setString(1, name);
                         pstat.setString(2, email);
@@ -244,6 +247,13 @@ public class UpdateAccount extends JFrame {
             }
         });
     }// end constructor
+
+    // validate inputted email
+    // using java.util.regex.patterns.match()
+    public static boolean validEmail(String email){
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
+    }
 
     // main
     public static void main(String args[]){
