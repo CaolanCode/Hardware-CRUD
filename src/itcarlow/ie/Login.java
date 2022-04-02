@@ -34,6 +34,8 @@ public class Login extends JFrame {
     ResultSet resultSet;
     String email = "";
     String password = "";
+    String DBPassword;
+    boolean matchedPasswords;
 
 
     // constructor
@@ -91,12 +93,15 @@ public class Login extends JFrame {
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     email = emailTextField.getText();
                     password = new String(passwordTextField.getPassword());
-                    pstat = connection.prepareStatement("SELECT idCust, email, password FROM customer WHERE email=? AND password=?");
-                    pstat.setString(1,email);
-                    pstat.setString(2,password);
+                    pstat = connection.prepareStatement("SELECT password FROM customer WHERE email=?");
+                    pstat.setString(1, email);
                     resultSet = pstat.executeQuery();
                     if(resultSet.next()){
-                        customerID = resultSet.getInt("idCust");
+                        DBPassword = resultSet.getString("password");
+                    }
+                    matchedPasswords = HashPassword.checkPassword(password,DBPassword);
+                    System.out.println(matchedPasswords + " match result");
+                    if(matchedPasswords){
                         CreateOrder createOrder = new CreateOrder("Order a Product");
                         createOrder.setVisible(true);
                         createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

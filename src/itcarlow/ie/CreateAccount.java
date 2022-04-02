@@ -10,10 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class CreateAccount extends JFrame{
     private JPanel nameJPanel;
@@ -45,6 +42,8 @@ public class CreateAccount extends JFrame{
     final String DATABASE_URL = "jdbc:mysql://localhost/C.I.M.S";
     Connection connection = null;
     PreparedStatement pstat = null;
+    PreparedStatement pstatEmail = null;
+    ResultSet resultSet = null;
     String name = "";
     String email = "";
     String confirmEmail = "";
@@ -54,10 +53,6 @@ public class CreateAccount extends JFrame{
     String telephone = "";
     int i = 0;
 
-    // password variables
-    byte[] hashedPassword = null;
-    byte[] saltByte = null;
-    String saltString = "";
 
     // constructor
     public CreateAccount(String title){
@@ -150,8 +145,11 @@ public class CreateAccount extends JFrame{
                 try{
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
+                    // create prepared statement to retrieve all emails to check if the inputted on exists
+                    pstatEmail = connection.prepareStatement("SELECT email FROM customer");
+                    resultSet = pstatEmail.executeQuery();
                     // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,salt,address,telephone) VALUES(?,?,?,?,?,?)");
+                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailJTextField.getText();
@@ -160,6 +158,13 @@ public class CreateAccount extends JFrame{
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
 
+                    // check if email exists in database
+                    while (resultSet.next()){
+                        if(resultSet.getString("email").equals(email)){
+                            JOptionPane.showMessageDialog(null,"Email already used", "Error", JOptionPane.ERROR_MESSAGE);
+                            throw new Exception("Exception thrown");
+                        }
+                    }
                     // compare email to confirm email
                     if(!email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
@@ -172,25 +177,22 @@ public class CreateAccount extends JFrame{
                     } else if(!Validate.validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and at least 8 characters", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                        // pass password to HashPassword class
-                        hashedPassword = HashPassword.hashPassword(password);
-                        // concatenate hashedPassword to password string
-                        password = "" + hashedPassword;
-                        saltByte = HashPassword.salt;
-                        saltString = "" + saltByte;
+                        // password concatenated into a string
+                        password = HashPassword.hashPassword(password);
                         pstat.setString(1, name);
                         pstat.setString(2, email);
                         pstat.setString(3, password);
-                        pstat.setString(4, saltString);
-                        pstat.setString(5, address);
-                        pstat.setString(6, telephone);
+                        pstat.setString(4, address);
+                        pstat.setString(5, telephone);
                         // insert data into table
                         i = pstat.executeUpdate();
                         System.out.println(i + " record successfully added to the customer table");
                         }
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();
-                } finally {
+                } catch (Exception exception){
+                    exception.printStackTrace();
+                } finally{
                     try {
                         connection.close();
                         pstat.close();

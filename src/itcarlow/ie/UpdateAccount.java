@@ -57,8 +57,6 @@ public class UpdateAccount extends JFrame {
     String confirmPassword;
     String telephone;
     int i = 0;
-    byte[] hashedPassword = null;
-    byte[] saltByte;
     String saltString = "";
 
     // constructor
@@ -202,20 +200,15 @@ public class UpdateAccount extends JFrame {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         if(confirmPasswordTextField.getPassword().length != 0){
-                            // pass password to HashPassword class
-                            hashedPassword = HashPassword.hashPassword(password);
-                            // concatenate hashedPassword to password string
-                            password = "" + hashedPassword;
-                            saltByte = HashPassword.salt;
-                            saltString = "" + saltByte;
+                            // pass password to retrieve hashed password
+                            password = HashPassword.hashPassword(password);
                         }
                         pstat.setString(1, name);
                         pstat.setString(2, email);
                         pstat.setString(3, password);
-                        pstat.setString(4,saltString);
-                        pstat.setString(5, address);
-                        pstat.setString(6, telephone);
-                        pstat.setInt(7, Login.customerID);
+                        pstat.setString(4, address);
+                        pstat.setString(5, telephone);
+                        pstat.setInt(6, Login.customerID);
                         // insert data into table
                         i = pstat.executeUpdate();
                         System.out.println(i+" record successfully updated in the customer table");
