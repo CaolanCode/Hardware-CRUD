@@ -57,7 +57,6 @@ public class UpdateAccount extends JFrame {
     String confirmPassword;
     String telephone;
     int i = 0;
-    String saltString = "";
 
     // constructor
     public UpdateAccount(String title){
@@ -140,6 +139,7 @@ public class UpdateAccount extends JFrame {
         add(telephoneJPanel);
         add(updateCancelJPanel);
 
+        // retrieve details from database
         try{
             // establish connection to database
             connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
@@ -150,9 +150,7 @@ public class UpdateAccount extends JFrame {
             if(resultSet.next()){
                 nameTextField.setText(resultSet.getString("name"));
                 emailTextField.setText(resultSet.getString("email"));
-                passwordTextField.setText(resultSet.getString("password"));
-                // assign salt database variable to saltString
-                saltString = resultSet.getString("salt");
+                password = resultSet.getString("password");
                 addressTextField.setText(resultSet.getString("address"));
                 telephoneTextField.setText(resultSet.getString("telephone"));
             }
@@ -179,24 +177,22 @@ public class UpdateAccount extends JFrame {
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, salt=?, address=?, telephone=? WHERE idCust=?");
+                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=? address=?, telephone=? WHERE idCust=?");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailTextField.getText();
-                    password = new String(passwordTextField.getPassword());
-                    confirmPassword = new String(confirmPasswordTextField.getPassword());
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
                     // check if confirmEmail is not length 0 and compare email with confirmEmail
                     if(confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)){
                         JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         // check if confirmPassword length is not 0 and compare password with confirmPassword
-                    } else if(confirmPasswordTextField.getPassword().length != 0 && !password.equals(confirmPassword)) {
+                    } else if(passwordTextField.getPassword().length != 0 && !password.equals(confirmPassword)) {
                         JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         // call validEmail method to check if email if valid
                     } else if(!Validate.validEmail(email)) {
                     JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else if(!Validate.validPassword(password)) {
+                    } else if(passwordTextField.getPassword().length != 0 && !Validate.validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         if(confirmPasswordTextField.getPassword().length != 0){

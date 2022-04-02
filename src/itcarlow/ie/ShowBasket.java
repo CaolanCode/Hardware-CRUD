@@ -73,10 +73,7 @@ public class ShowBasket extends JFrame {
                 tableModel.addRow(new Object[]{invoiceId,quantity, cost, productId});
                 i++;
             }
-            // error handling
-            if(i<1){
-                JOptionPane.showMessageDialog(null,"No Order History Found", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if(i==1){
+            if(i==1){
                 System.out.println(i + " record found in the invoice table");
             } else{
                 System.out.println(i + " records found in the invoice table");

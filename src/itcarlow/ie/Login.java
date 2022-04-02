@@ -93,33 +93,34 @@ public class Login extends JFrame {
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     email = emailTextField.getText();
                     password = new String(passwordTextField.getPassword());
-                    pstat = connection.prepareStatement("SELECT password FROM customer WHERE email=?");
+                    pstat = connection.prepareStatement("SELECT idCust, password FROM customer WHERE email=?");
                     pstat.setString(1, email);
                     resultSet = pstat.executeQuery();
-                    if(resultSet.next()){
+                    if(resultSet.next()) {
                         DBPassword = resultSet.getString("password");
+                        customerID = resultSet.getInt("idCust");
+                    } else{
+                        JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    matchedPasswords = HashPassword.checkPassword(password,DBPassword);
-                    System.out.println(matchedPasswords + " match result");
-                    if(matchedPasswords){
+                    // error message for empty email textfield
+                    if (emailTextField.getText().length() == 0) {
+                        JOptionPane.showMessageDialog(null, "Please enter an email", "Error", JOptionPane.ERROR_MESSAGE);
+                        // error message for empty password textfield
+                    } else if (passwordTextField.getPassword().length == 0) {
+                        JOptionPane.showMessageDialog(null, "Please enter a password", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    // check if new password matches password stored in database
+                    matchedPasswords = HashPassword.checkPassword(password, DBPassword);
+                    if (matchedPasswords) {
                         CreateOrder createOrder = new CreateOrder("Order a Product");
                         createOrder.setVisible(true);
                         createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        createOrder.setSize(550,400);
-                        createOrder.setLocation(500,400);
-                        System.out.println(customerID);
+                        createOrder.setSize(550, 400);
+                        createOrder.setLocation(500, 400);
                         dispose();
-                    } else{
-                        // error message for empty email textfield
-                        if(emailTextField.getText().length() == 0){
-                            JOptionPane.showMessageDialog(null,"Please enter an email", "Error", JOptionPane.ERROR_MESSAGE);
-                            // error message for empty password textfield
-                        } else if(passwordTextField.getPassword().length == 0){
-                            JOptionPane.showMessageDialog(null,"Please enter a password", "Error", JOptionPane.ERROR_MESSAGE);
-                            // error message for incorrect email or password
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
+                    } else {
+                        // password doesn't not match
+                        JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
                         Login login = new Login("Login");
                         login.setVisible(true);
                         login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,6 +128,8 @@ public class Login extends JFrame {
                         login.setLocation(500,400);
                         dispose();
                     }
+
+
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {

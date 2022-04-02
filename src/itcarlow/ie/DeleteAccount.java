@@ -4,23 +4,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DeleteAccount extends JFrame {
     // variables
     // panels
-    private JPanel customerIdJPanel;
-    private JPanel nameJPanel;
+    private JPanel emailJPanel;
+    private JPanel passwordJPanel;
     private JPanel buttonJPanel;
     // labels
-    private JLabel customerIdJLabel;
-    private JLabel nameJLabel;
+    private JLabel emailJLabel;
+    private JLabel passwordJLabel;
     // text fields
-    private JTextField customerIdTextField;
-    private JTextField nameTextField;
+    private JTextField emailTextField;
+    private JPasswordField passwordTextField;
     // buttons
     private JButton deleteJButton;
     private JButton cancelJButton;
@@ -29,9 +26,12 @@ public class DeleteAccount extends JFrame {
     final String DATABASE_URL = "jdbc:mysql://localhost/C.I.M.S";
     Connection connection = null;
     PreparedStatement pstat = null;
+    ResultSet resultSet = null;
     int i = 0;
-    String customerIDText;
-    int customerID;
+    String email;
+    String DBPassword;
+    String password;
+    boolean matchPasswords;
 
     // constructor
     public DeleteAccount(String title){
@@ -39,21 +39,21 @@ public class DeleteAccount extends JFrame {
         // set layout
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        // customer id panel and components
-        customerIdJPanel = new JPanel(new FlowLayout());
-        customerIdJLabel = new JLabel("Customer ID");
-        customerIdTextField = new JTextField();
-        customerIdTextField.setPreferredSize(new Dimension(350,40));
-        customerIdJPanel.add(customerIdJLabel);
-        customerIdJPanel.add(customerIdTextField);
+        // email panel and components
+        emailJPanel = new JPanel(new FlowLayout());
+        emailJLabel = new JLabel("Email");
+        emailTextField = new JTextField();
+        emailTextField.setPreferredSize(new Dimension(350,40));
+        emailJPanel.add(emailJLabel);
+        emailJPanel.add(emailTextField);
 
         // customer name panel and components
-        nameJPanel = new JPanel(new FlowLayout());
-        nameJLabel = new JLabel("Name");
-        nameTextField = new JTextField();
-        nameTextField.setPreferredSize(new Dimension(350,40));
-        nameJPanel.add(nameJLabel);
-        nameJPanel.add(nameTextField);
+        passwordJPanel = new JPanel(new FlowLayout());
+        passwordJLabel = new JLabel("Password");
+        passwordTextField = new JPasswordField();
+        passwordTextField.setPreferredSize(new Dimension(350,40));
+        passwordJPanel.add(passwordJLabel);
+        passwordJPanel.add(passwordTextField);
 
         // buttons panel and buttons
         buttonJPanel = new JPanel(new FlowLayout());
@@ -63,9 +63,34 @@ public class DeleteAccount extends JFrame {
         buttonJPanel.add(cancelJButton);
 
         // add panels to JFrame
-        add(customerIdJPanel);
-        add(nameJPanel);
+        add(emailJPanel);
+        add(passwordJPanel);
         add(buttonJPanel);
+
+        // retrieve email from database
+        // publish customers email to the emailTextField
+        try{
+            // establish connection to database
+            connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
+            // create prepared statement to select all data from product table
+            pstat = connection.prepareStatement("SELECT email, password FROM customer WHERE idCust=?");
+            pstat.setInt(1,Login.customerID);
+            resultSet = pstat.executeQuery();
+            if(resultSet.next()){
+                emailTextField.setText(resultSet.getString("email"));
+                DBPassword = resultSet.getString("password");
+            }
+        }catch (SQLException sqlException){
+            sqlException.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+                pstat.close();
+                resultSet.close();
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
+        }
 
         // delete button listener
         // create instance of Login class
@@ -74,16 +99,23 @@ public class DeleteAccount extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 try{
-                    // establish connection to database
-                    connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
-                    // create prepared statement for deleting data from the table
-                    pstat = connection.prepareStatement("DELETE FROM customer WHERE idCust=?");
-                    customerIDText = customerIdTextField.getText();
-                    customerID = Integer.parseInt(customerIDText); // change string input into integer
-                    pstat.setInt(1,customerID);
-                    // delete data from the table
-                    i = pstat.executeUpdate();
-                    System.out.println(i + " record successfully removed from the customer table");
+                    email = emailTextField.getText();
+                    password = new String(passwordTextField.getPassword());
+                    // check if password is correct
+                    matchPasswords = HashPassword.checkPassword(password, DBPassword);
+                    if(matchPasswords){
+                        // establish connection to database
+                        connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
+                        // create prepared statement for deleting data from the table
+                        pstat = connection.prepareStatement("DELETE FROM customer WHERE email=?");
+                        pstat.setString(1,email);
+                        // delete data from the table
+                        i = pstat.executeUpdate();
+                        System.out.println(i + " record successfully removed from the customer table");
+                    } else {
+                        // password doesn't match database
+                        JOptionPane.showMessageDialog(null,"Incorrect Email or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
                 } finally {
