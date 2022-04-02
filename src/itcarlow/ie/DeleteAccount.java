@@ -101,6 +101,7 @@ public class DeleteAccount extends JFrame {
                 super.mouseClicked(e);
                 try{
                     email = emailTextField.getText();
+                    System.out.println(email);
                     password = new String(passwordTextField.getPassword());
                     // check if password is correct
                     matchPasswords = HashPassword.checkPassword(password, DBPassword);
@@ -110,7 +111,7 @@ public class DeleteAccount extends JFrame {
                         // create prepared statement to update deleteFlag to 1
                         pstat = connection.prepareStatement("UPDATE customer SET deleteFlag=? WHERE email=?");
                         pstat.setInt(1,deleteFlag);
-                        pstat.setString(1,email);
+                        pstat.setString(2,email);
                         // delete data from the table
                         i = pstat.executeUpdate();
                         System.out.println(i + " record successfully removed from the customer table");

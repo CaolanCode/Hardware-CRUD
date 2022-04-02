@@ -106,7 +106,7 @@ public class Login extends JFrame {
                         }
                         // check if deleteFlag = 1
                         if(deleteFlag == 1){
-                            JOptionPane.showMessageDialog(null, "Account does not exist", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
                         } else{
                             // error message for empty email textfield
                             if (emailTextField.getText().length() == 0) {
