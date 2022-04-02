@@ -32,6 +32,7 @@ public class DeleteAccount extends JFrame {
     String DBPassword;
     String password;
     boolean matchPasswords;
+    int deleteFlag = 1;
 
     // constructor
     public DeleteAccount(String title){
@@ -106,8 +107,9 @@ public class DeleteAccount extends JFrame {
                     if(matchPasswords){
                         // establish connection to database
                         connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
-                        // create prepared statement for deleting data from the table
-                        pstat = connection.prepareStatement("DELETE FROM customer WHERE email=?");
+                        // create prepared statement to update deleteFlag to 1
+                        pstat = connection.prepareStatement("UPDATE customer SET deleteFlag=? WHERE email=?");
+                        pstat.setInt(1,deleteFlag);
                         pstat.setString(1,email);
                         // delete data from the table
                         i = pstat.executeUpdate();
