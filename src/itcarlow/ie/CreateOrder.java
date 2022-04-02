@@ -10,7 +10,6 @@ import java.sql.*;
 public class CreateOrder extends JFrame{
     // variables
     // panels
-    private JPanel mainJPanel;
     private JPanel productJPanel;
     private JPanel quantityJPanel;
     private JPanel submitClearJPanel;
