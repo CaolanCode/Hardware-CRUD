@@ -140,7 +140,7 @@ public class CreateAccount extends JFrame{
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement to retrieve all emails to check if the inputted on exists
-                    pstatEmail = connection.prepareStatement("SELECT email FROM customer");
+                    pstatEmail = connection.prepareStatement("SELECT email, deleteFlag FROM customer");
                     resultSet = pstatEmail.executeQuery();
                     // create prepared statement for inserting data into table
                     pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
@@ -152,9 +152,9 @@ public class CreateAccount extends JFrame{
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
 
-                    // check if email exists in database
+                    // check if email exists in database and deleteFlag is 0
                     while (resultSet.next()){
-                        if(resultSet.getString("email").equals(email)){
+                        if(resultSet.getString("email").equals(email) && resultSet.getInt("deleteFlag") == 0){
                             JOptionPane.showMessageDialog(null,"Email already used", "Error", JOptionPane.ERROR_MESSAGE);
                             throw new Exception("Exception thrown");
                         }
