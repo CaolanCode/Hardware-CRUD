@@ -236,6 +236,7 @@ public class UpdateAccount extends JFrame {
                     exception.printStackTrace();
                 }
             }//end finally
+                // create instance of CreateOrder when listener complete
                 CreateOrder createOrder = new CreateOrder("Order a Product");
                 createOrder.setVisible(true);
                 createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
