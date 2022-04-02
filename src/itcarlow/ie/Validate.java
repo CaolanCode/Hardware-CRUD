@@ -14,7 +14,7 @@ public class Validate {
     // using java.util.regex.patterns.match()
     // 1 number, 1 a-z, 1 A-Z, 1 special char, no white space, at least 8 characters
     public static boolean validPassword(String password){
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         // return true if it matches the regex pattern
         return password.matches(regex);
     }

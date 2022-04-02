@@ -48,6 +48,7 @@ public class UpdateAccount extends JFrame {
     String email;
     String confirmEmail;
     String password;
+    String DBPassword;
     String confirmPassword;
     String telephone;
     int i = 0;
@@ -85,7 +86,7 @@ public class UpdateAccount extends JFrame {
         // confirm email panel
         confirmEmailJPanel = new JPanel(new FlowLayout());
         confirmEmailJLabel = new JLabel("Confirm Email");
-        confirmEmailTextField = new JPasswordField();
+        confirmEmailTextField = new JTextField();
         confirmEmailTextField.setPreferredSize(new Dimension(350,30));
         confirmEmailJPanel.add(confirmEmailJLabel);
         confirmEmailJPanel.add(confirmEmailTextField);
@@ -144,7 +145,7 @@ public class UpdateAccount extends JFrame {
             if(resultSet.next()){
                 nameTextField.setText(resultSet.getString("name"));
                 emailTextField.setText(resultSet.getString("email"));
-                password = resultSet.getString("password");
+                DBPassword = resultSet.getString("password");
                 addressTextField.setText(resultSet.getString("address"));
                 telephoneTextField.setText(resultSet.getString("telephone"));
             }
@@ -167,41 +168,63 @@ public class UpdateAccount extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                try{
+                try {
                     // establish connection to database
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
-                    // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=? address=?, telephone=? WHERE idCust=?");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailTextField.getText();
                     address = addressTextField.getText();
                     telephone = telephoneTextField.getText();
-                    // check if confirmEmail is not length 0 and compare email with confirmEmail
-                    if(confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)){
-                        JOptionPane.showMessageDialog(null,"Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
-                        // check if confirmPassword length is not 0 and compare password with confirmPassword
-                    } else if(passwordTextField.getPassword().length != 0 && !password.equals(confirmPassword)) {
-                        JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
-                        // call validEmail method to check if email if valid
-                    } else if(!Validate.validEmail(email)) {
-                    JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else if(passwordTextField.getPassword().length != 0 && !Validate.validPassword(password)) {
-                        JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else{
-                        if(confirmPasswordTextField.getPassword().length != 0){
-                            // pass password to retrieve hashed password
-                            password = HashPassword.hashPassword(password);
+                    // if password textfield is empty
+                    // make prepared statement without password
+                    if(passwordTextField.getPassword().length == 0){
+                        // email vaildation
+                        if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                            JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (!Validate.validEmail(email)) {
+                            JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
                         }
+                        // create prepared statement for inserting data into table
+                        pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, address=?, telephone=? WHERE idCust=?");
                         pstat.setString(1, name);
                         pstat.setString(2, email);
-                        pstat.setString(3, password);
-                        pstat.setString(4, address);
-                        pstat.setString(5, telephone);
-                        pstat.setInt(6, Login.customerID);
+                        pstat.setString(3, address);
+                        pstat.setString(4, telephone);
+                        pstat.setInt(5, Login.customerID);
                         // insert data into table
                         i = pstat.executeUpdate();
-                        System.out.println(i+" record successfully updated in the customer table");
+                        System.out.println(i + " record successfully updated in the customer table");
+                    } else{
+                        // assign password to password textfield
+                        password = new String(passwordTextField.getPassword());
+                        confirmPassword = new String(confirmPasswordTextField.getPassword());
+                        // password validation
+                        if (!password.equals(confirmPassword)) {
+                            JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (!Validate.validPassword(password)) {
+                            JOptionPane.showMessageDialog(null, "Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // hash password
+                            password = HashPassword.hashPassword(password);
+                            // email vaildation
+                            if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                                JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                            } else if (!Validate.validEmail(email)) {
+                                JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                            // create prepared statement for inserting data into table
+                            pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, address=?, telephone=? WHERE idCust=?");
+                            pstat.setString(1, name);
+                            pstat.setString(2, email);
+                            pstat.setString(3, password);
+                            pstat.setString(4, address);
+                            pstat.setString(5, telephone);
+                            pstat.setInt(6, Login.customerID);
+                            // insert data into table
+                            i = pstat.executeUpdate();
+                            System.out.println(i + " record successfully updated in the customer table");
+                        }
                     }
             } catch (SQLException sqlException){
                 sqlException.printStackTrace();
