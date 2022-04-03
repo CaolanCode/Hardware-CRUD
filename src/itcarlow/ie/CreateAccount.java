@@ -170,6 +170,10 @@ public class CreateAccount extends JFrame{
                         JOptionPane.showMessageDialog(null,"Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
                     } else if(!Validate.validPassword(password)) {
                         JOptionPane.showMessageDialog(null,"Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and at least 8 characters", "Error", JOptionPane.ERROR_MESSAGE);
+                    }else if(address.length() == 0) {
+                        JOptionPane.showMessageDialog(null,"Address required", "Error", JOptionPane.ERROR_MESSAGE);
+                    }else if(telephone.length() == 0) {
+                        JOptionPane.showMessageDialog(null,"Telephone number required", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
                         // password concatenated into a string
                         password = HashPassword.hashPassword(password);
