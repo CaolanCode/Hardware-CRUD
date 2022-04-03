@@ -26,6 +26,8 @@ public class DeleteAccount extends JFrame {
     final String DATABASE_URL = "jdbc:mysql://localhost/C.I.M.S";
     Connection connection = null;
     PreparedStatement pstat = null;
+    PreparedStatement pstatInvoice = null;
+    PreparedStatement pstatDelete = null;
     ResultSet resultSet = null;
     int i = 0;
     String email;
@@ -101,23 +103,40 @@ public class DeleteAccount extends JFrame {
                 super.mouseClicked(e);
                 try{
                     email = emailTextField.getText();
-                    System.out.println(email);
                     password = new String(passwordTextField.getPassword());
                     // check if password is correct
                     matchPasswords = HashPassword.checkPassword(password, DBPassword);
                     if(matchPasswords){
                         // establish connection to database
                         connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
-                        // create prepared statement to update deleteFlag to 1
-                        pstat = connection.prepareStatement("UPDATE customer SET deleteFlag=? WHERE email=?");
-                        pstat.setInt(1,deleteFlag);
-                        pstat.setString(2,email);
-                        // delete data from the table
-                        i = pstat.executeUpdate();
-                        System.out.println(i + " record successfully removed from the customer table");
+                        // create prepared statement to check if the customer has an order history
+                        pstatInvoice = connection.prepareStatement("SELECT * FROM invoice WHERE customerFk=?");
+                        pstatInvoice.setInt(1,Login.customerID);
+                        resultSet = pstatInvoice.executeQuery();
+                        if(!resultSet.next()){
+                            pstatDelete = connection.prepareStatement("DELETE FROM customer WHERE idCust=?");
+                            pstatDelete.setInt(1,Login.customerID);
+                            // delete customer account
+                            i = pstatDelete.executeUpdate();
+                            System.out.println(i + " record successfully removed from the customer table");
+                            login();
+                            dispose();
+                        } else{
+                            // create prepared statement to update deleteFlag to 1
+                            pstat = connection.prepareStatement("UPDATE customer SET deleteFlag=? WHERE email=?");
+                            pstat.setInt(1,deleteFlag);
+                            pstat.setString(2,email);
+                            // update customer account
+                            i = pstat.executeUpdate();
+                            System.out.println(i + " record successfully updated in customer table");
+                            login();
+                            dispose();
+                        }
                     } else {
                         // password doesn't match database
                         JOptionPane.showMessageDialog(null,"Incorrect Email or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                        deleteAccount();
+                        dispose();
                     }
                 }catch (SQLException sqlException){
                     sqlException.printStackTrace();
@@ -129,12 +148,6 @@ public class DeleteAccount extends JFrame {
                         exception.printStackTrace();
                     }
                 }
-                Login login = new Login("Login");
-                login.setVisible(true);
-                login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                login.setSize(550,400);
-                login.setLocation(500,400);
-                dispose();
             }
         });
         // cancel button listener
@@ -152,6 +165,25 @@ public class DeleteAccount extends JFrame {
             }
         });
     }// end constructor
+
+    // create instance of Login class
+    private static void login(){
+        Login login = new Login("Login");
+        login.setVisible(true);
+        login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        login.setSize(550,400);
+        login.setLocation(500,400);
+    }
+
+    // create instance of deleteAccount class
+    private static void deleteAccount(){
+        DeleteAccount deleteAccount = new DeleteAccount("Delete Account");
+        deleteAccount.setVisible(true);
+        deleteAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        deleteAccount.setSize(550,400);
+        deleteAccount.setLocation(500,400);
+    }
+
     // main
     public static void main(String args[]){
         DeleteAccount deleteAccount = new DeleteAccount("Delete Account");

@@ -187,6 +187,9 @@ public class CreateAccount extends JFrame{
                         // insert data into table
                         i = pstat.executeUpdate();
                         System.out.println(i + " record successfully added to the customer table");
+                        // create instance of Login class
+                        login();
+                        dispose();
                         }
                 } catch (SQLException sqlException){
                     sqlException.printStackTrace();
@@ -208,11 +211,7 @@ public class CreateAccount extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                Login login = new Login("Log in");
-                login.setVisible(true);
-                login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                login.setSize(550,400);
-                login.setLocation(500,400);
+                login();
                 dispose();
             }
         });
@@ -225,6 +224,15 @@ public class CreateAccount extends JFrame{
         createAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         createAccount.setSize(550,400);
         createAccount.setLocation(500,400);
+    }
+
+    // create instance of Login class
+    private static void login(){
+        Login login = new Login("Log in");
+        login.setVisible(true);
+        login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        login.setSize(550,400);
+        login.setLocation(500,400);
     }
 
     // main
