@@ -13,3 +13,5 @@ A CRUD GUI to allow customers to:
 GUI was built using Java.Swing
 
 Database was managed using SQL
+
+Enabed PBKDF2 as a hashing algorithm for the users password
