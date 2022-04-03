@@ -141,6 +141,8 @@ public class CreateAccount extends JFrame{
                     connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
                     // create prepared statement to retrieve all emails to check if the inputted on exists
                     pstatEmail = connection.prepareStatement("SELECT email, deleteFlag FROM customer");
+                    // create prepared statement for inserting data into table
+                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                     resultSet = pstatEmail.executeQuery();
                     name = nameTextField.getText();
                     email = emailTextField.getText();
@@ -175,8 +177,6 @@ public class CreateAccount extends JFrame{
                     }else if(telephone.length() == 0) {
                         JOptionPane.showMessageDialog(null,"Telephone number required", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
-                        // create prepared statement for inserting data into table
-                        pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                         // password concatenated into a string
                         password = HashPassword.hashPassword(password);
                         pstat.setString(1, name);
