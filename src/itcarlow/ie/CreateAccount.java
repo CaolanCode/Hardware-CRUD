@@ -142,8 +142,6 @@ public class CreateAccount extends JFrame{
                     // create prepared statement to retrieve all emails to check if the inputted on exists
                     pstatEmail = connection.prepareStatement("SELECT email, deleteFlag FROM customer");
                     resultSet = pstatEmail.executeQuery();
-                    // create prepared statement for inserting data into table
-                    pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                     name = nameTextField.getText();
                     email = emailTextField.getText();
                     confirmEmail = confirmEmailJTextField.getText();
@@ -156,7 +154,9 @@ public class CreateAccount extends JFrame{
                     while (resultSet.next()){
                         if(resultSet.getString("email").equals(email) && resultSet.getInt("deleteFlag") == 0){
                             JOptionPane.showMessageDialog(null,"Email already used", "Error", JOptionPane.ERROR_MESSAGE);
-                            throw new Exception("Exception thrown");
+                            // call createAccount method and dispose of frame
+                            createAccount();
+                            dispose();
                         }
                     }
                     // compare email to confirm email
@@ -175,6 +175,8 @@ public class CreateAccount extends JFrame{
                     }else if(telephone.length() == 0) {
                         JOptionPane.showMessageDialog(null,"Telephone number required", "Error", JOptionPane.ERROR_MESSAGE);
                     } else{
+                        // create prepared statement for inserting data into table
+                        pstat = connection.prepareStatement("INSERT INTO customer (name,email,password,address,telephone) VALUES(?,?,?,?,?)");
                         // password concatenated into a string
                         password = HashPassword.hashPassword(password);
                         pstat.setString(1, name);
@@ -198,12 +200,6 @@ public class CreateAccount extends JFrame{
                         exception.printStackTrace();
                     }
                 }
-                Login login = new Login("Log in");
-                login.setVisible(true);
-                login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                login.setSize(550,400);
-                login.setLocation(500,400);
-                dispose();
             }
         });
         // cancel button listener
@@ -221,6 +217,15 @@ public class CreateAccount extends JFrame{
             }
         });
     }// end constructor
+
+    // create instance of CreateAccount class
+    private static void createAccount(){
+        CreateAccount createAccount = new CreateAccount("Create Account");
+        createAccount.setVisible(true);
+        createAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        createAccount.setSize(550,400);
+        createAccount.setLocation(500,400);
+    }
 
     // main
     public static void main(String args[]){
