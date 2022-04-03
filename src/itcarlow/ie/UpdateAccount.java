@@ -180,7 +180,9 @@ public class UpdateAccount extends JFrame {
                     // make prepared statement without password
                     if(passwordTextField.getPassword().length == 0){
                         // email vaildation
-                        if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                        if(confirmEmailTextField.getText().length() == 0){
+                            JOptionPane.showMessageDialog(null, "Confirm email required", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
                             JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
                         } else if (!Validate.validEmail(email)) {
                             JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
@@ -198,7 +200,16 @@ public class UpdateAccount extends JFrame {
                     } else{
                         // assign password to password textfield
                         password = new String(passwordTextField.getPassword());
+                        // assign confirmPassword to confirm password textfield
                         confirmPassword = new String(confirmPasswordTextField.getPassword());
+                        // email vaildation
+                        if(confirmEmailTextField.getText().length() == 0){
+                            JOptionPane.showMessageDialog(null, "Confirm email required", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                            JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (!Validate.validEmail(email)) {
+                            JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                         // password validation
                         if (!password.equals(confirmPassword)) {
                             JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
@@ -207,12 +218,7 @@ public class UpdateAccount extends JFrame {
                         } else {
                             // hash password
                             password = HashPassword.hashPassword(password);
-                            // email vaildation
-                            if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
-                                JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
-                            } else if (!Validate.validEmail(email)) {
-                                JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
+
                             // create prepared statement for inserting data into table
                             pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, password=?, address=?, telephone=? WHERE idCust=?");
                             pstat.setString(1, name);
