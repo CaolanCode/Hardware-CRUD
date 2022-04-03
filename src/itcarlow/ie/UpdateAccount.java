@@ -180,42 +180,70 @@ public class UpdateAccount extends JFrame {
                     // make prepared statement without password
                     if(passwordTextField.getPassword().length == 0){
                         // email vaildation
+                        // check if email is enter in confirmEmail
                         if(confirmEmailTextField.getText().length() == 0){
                             JOptionPane.showMessageDialog(null, "Confirm email required", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
+                            // compare emails
                         } else if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
                             JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
+                            // validate email
                         } else if (!Validate.validEmail(email)) {
                             JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
+                            // details are valid
+                        } else{
+                            // create prepared statement for inserting data into table
+                            pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, address=?, telephone=? WHERE idCust=?");
+                            pstat.setString(1, name);
+                            pstat.setString(2, email);
+                            pstat.setString(3, address);
+                            pstat.setString(4, telephone);
+                            pstat.setInt(5, Login.customerID);
+                            // insert data into table
+                            i = pstat.executeUpdate();
+                            System.out.println(i + " record successfully updated in the customer table");
+
+                            // create instance of CreateOrder when listener complete
+                            CreateOrder createOrder = new CreateOrder("Order a Product");
+                            createOrder.setVisible(true);
+                            createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                            createOrder.setSize(550,400);
+                            createOrder.setLocation(500,400);
+                            dispose();
                         }
-                        // create prepared statement for inserting data into table
-                        pstat = connection.prepareStatement("UPDATE customer SET name=?, email=?, address=?, telephone=? WHERE idCust=?");
-                        pstat.setString(1, name);
-                        pstat.setString(2, email);
-                        pstat.setString(3, address);
-                        pstat.setString(4, telephone);
-                        pstat.setInt(5, Login.customerID);
-                        // insert data into table
-                        i = pstat.executeUpdate();
-                        System.out.println(i + " record successfully updated in the customer table");
+                        // password enter in password field
                     } else{
                         // password textfields have inputs
                         // assign password to password textfield
                         password = new String(passwordTextField.getPassword());
                         // assign confirmPassword to confirm password textfield
                         confirmPassword = new String(confirmPasswordTextField.getPassword());
-                        // email vaildation
-                        if(confirmEmailTextField.getText().length() == 0){
-                            JOptionPane.showMessageDialog(null, "Confirm email required", "Error", JOptionPane.ERROR_MESSAGE);
-                        } else if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                        // check if email is entered in confirmEmail
+                         if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
                             JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
+                            // validate emails
                         } else if (!Validate.validEmail(email)) {
                             JOptionPane.showMessageDialog(null, "Not a valid email address", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                        // password validation
-                        if (!password.equals(confirmPassword)) {
+                            updateAccount();
+                            dispose();
+                            // password validation
+                            // compare passwords
+                        } else if (!password.equals(confirmPassword)) {
                             JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
+                            // validate password
                         } else if (!Validate.validPassword(password)) {
                             JOptionPane.showMessageDialog(null, "Password must have 1 number, 1 lowercase character, 1 capital character, 1 special character and length between 8 and 20", "Error", JOptionPane.ERROR_MESSAGE);
+                            updateAccount();
+                            dispose();
                         } else {
                             // hash password
                             password = HashPassword.hashPassword(password);
@@ -231,6 +259,14 @@ public class UpdateAccount extends JFrame {
                             // insert data into table
                             i = pstat.executeUpdate();
                             System.out.println(i + " record successfully updated in the customer table");
+
+                            // create instance of CreateOrder when listener complete
+                            CreateOrder createOrder = new CreateOrder("Order a Product");
+                            createOrder.setVisible(true);
+                            createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                            createOrder.setSize(550,400);
+                            createOrder.setLocation(500,400);
+                            dispose();
                         }
                     }
             } catch (SQLException sqlException){
@@ -243,13 +279,6 @@ public class UpdateAccount extends JFrame {
                     exception.printStackTrace();
                 }
             }//end finally
-                // create instance of CreateOrder when listener complete
-                CreateOrder createOrder = new CreateOrder("Order a Product");
-                createOrder.setVisible(true);
-                createOrder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                createOrder.setSize(550,400);
-                createOrder.setLocation(500,400);
-                dispose();
             }
         });// end listener
 
@@ -283,6 +312,15 @@ public class UpdateAccount extends JFrame {
             }
         });
     }// end constructor
+
+    // create instance of UpdateAccount class
+    private static void updateAccount(){
+        UpdateAccount updateAccount = new UpdateAccount("Update Account Details");
+        updateAccount.setVisible(true);
+        updateAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        updateAccount.setSize(550,400);
+        updateAccount.setLocation(500,400);
+    }
 
     // main
     public static void main(String args[]){
