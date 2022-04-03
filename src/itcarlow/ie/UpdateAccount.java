@@ -198,6 +198,7 @@ public class UpdateAccount extends JFrame {
                         i = pstat.executeUpdate();
                         System.out.println(i + " record successfully updated in the customer table");
                     } else{
+                        // password textfields have inputs
                         // assign password to password textfield
                         password = new String(passwordTextField.getPassword());
                         // assign confirmPassword to confirm password textfield
