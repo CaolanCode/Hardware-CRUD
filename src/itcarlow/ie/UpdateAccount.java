@@ -181,12 +181,7 @@ public class UpdateAccount extends JFrame {
                     if(passwordTextField.getPassword().length == 0){
                         // email vaildation
                         // check if email is enter in confirmEmail
-                        if(confirmEmailTextField.getText().length() == 0){
-                            JOptionPane.showMessageDialog(null, "Confirm email required", "Error", JOptionPane.ERROR_MESSAGE);
-                            updateAccount();
-                            dispose();
-                            // compare emails
-                        } else if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
+                        if (confirmEmailTextField.getText().length() != 0 && !email.equals(confirmEmail)) {
                             JOptionPane.showMessageDialog(null, "Emails do not match", "Error", JOptionPane.ERROR_MESSAGE);
                             updateAccount();
                             dispose();
