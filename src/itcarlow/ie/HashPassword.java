@@ -35,7 +35,7 @@ public class HashPassword {
         } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(nsae);
         }
-    }// hashPassword
+    }// end hashPassword
 
     public static boolean checkPassword(String password, String DBPassword) {
         // split stored hash into iteration, salt, hash
