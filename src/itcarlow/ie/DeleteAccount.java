@@ -114,6 +114,7 @@ public class DeleteAccount extends JFrame {
                         pstatInvoice.setInt(1,Login.customerID);
                         resultSet = pstatInvoice.executeQuery();
                         if(!resultSet.next()){
+                            // create prepared statement to delete account with no invoice record
                             pstatDelete = connection.prepareStatement("DELETE FROM customer WHERE idCust=?");
                             pstatDelete.setInt(1,Login.customerID);
                             // delete customer account
