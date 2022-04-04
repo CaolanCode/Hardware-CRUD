@@ -36,7 +36,7 @@ public class Login extends JFrame {
     String password = "";
     String DBPassword = "";
     boolean matchedPasswords;
-    int deleteFlag = 1;
+    int deleteFlag = 0;
 
     // constructor
     public Login(String title){
@@ -94,21 +94,19 @@ public class Login extends JFrame {
                     try {
                         // establish connection to database
                         connection = DriverManager.getConnection(DATABASE_URL, "root", "root");
-                        pstat = connection.prepareStatement("SELECT idCust, password, deleteFlag FROM customer WHERE email=?");
+                        pstat = connection.prepareStatement("SELECT idCust, password, deleteFlag FROM customer WHERE email=? AND deleteFlag=?");
                         pstat.setString(1, email);
+                        pstat.setInt(2,deleteFlag);
                         resultSet = pstat.executeQuery();
                            if(resultSet.next()){
                                DBPassword = resultSet.getString("password");
                                customerID = resultSet.getInt("idCust");
-                               deleteFlag = resultSet.getInt("deleteFlag");
                             }
                            if(DBPassword == "") {
                                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
                                login();
                                dispose();
                            }else{
-                               // check if deleteFlag = 1
-                               if (deleteFlag == 0) {
                                    // check if new password matches password stored in database
                                    matchedPasswords = HashPassword.checkPassword(password, DBPassword);
                                    if (matchedPasswords) {
@@ -124,14 +122,8 @@ public class Login extends JFrame {
                                        login();
                                        dispose();
                                    }
-                               } else {
-                                   // account has deleteFlag
-                                   JOptionPane.showMessageDialog(null, "Account doesn't exist", "Error", JOptionPane.ERROR_MESSAGE);
-                                   login();
-                                   dispose();
                                }
-                           }
-                }catch (SQLException sqlException) {
+                           } catch (SQLException sqlException) {
                         sqlException.printStackTrace();
                     } finally {
                         try {
