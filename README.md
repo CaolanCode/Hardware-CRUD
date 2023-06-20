@@ -11,9 +11,9 @@ A CRUD GUI to allow customers to:
 * Delete their account
 
 ## Built using
-* GUI was built using Java.Swing
-* Database was managed using SQL
-* Used PBKDF2 as a hashing algorithm for the users password
+* GUI uses Java.Swing
+* Database is managed using SQL
+* PBKDF2 as a hashing algorithm for the users password
 
 ## Screenshots
 ![login page](./images/login.png)
