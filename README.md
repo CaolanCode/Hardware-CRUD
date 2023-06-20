@@ -1,7 +1,7 @@
 # Customer Invoice Management System
 
+## Objective
 A CRUD GUI to allow customers to:
-
 * Create an account
 * login to that account
 * Create an order
@@ -10,8 +10,10 @@ A CRUD GUI to allow customers to:
 * Update the details in their account
 * Delete their account
 
-GUI was built using Java.Swing
+## Built using
+* GUI was built using Java.Swing
+* Database was managed using SQL
+* Used PBKDF2 as a hashing algorithm for the users password
 
-Database was managed using SQL
-
-Enabed PBKDF2 as a hashing algorithm for the users password
+## Screenshots
+![login page](
