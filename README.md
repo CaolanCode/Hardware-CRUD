@@ -16,4 +16,10 @@ A CRUD GUI to allow customers to:
 * Used PBKDF2 as a hashing algorithm for the users password
 
 ## Screenshots
-![login page](
+![login page](./images/login.png)
+![create account page](./images/createAccount.png)
+![basket page](./images/basket.png)
+![order page](./images/orderPage.png)
+![update Account page](./images/updateAccount.png)
+![product page](./images/products.png)
+![password error message](./images/passwordError.png)
